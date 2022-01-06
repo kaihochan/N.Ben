@@ -11,7 +11,7 @@ with open('setting.json', mode='r', encoding='utf8') as jfile:
 class nben(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
+    
     # command &&dllm, response fuck your mother in Cantonese
     @commands.command()
     async def dllm(self, ctx):

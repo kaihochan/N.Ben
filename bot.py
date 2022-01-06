@@ -23,7 +23,7 @@ nbot = commands.Bot(
 
 # startup with status
 # startup notification on background console
-@nbot.event()
+@nbot.event
 async def on_ready():
     await nbot.change_presence(
         status=discord.Status.online, 
@@ -33,7 +33,7 @@ async def on_ready():
 
 # command &&echo, repeat wordings 
 '''
-@nbot.event()
+@nbot.event
 async def on_message(message):
     if (message.author != nbot.user):
         if message.content.startswith("&&echo "):

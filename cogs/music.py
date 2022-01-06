@@ -36,4 +36,3 @@ class music(commands.Cog):
 
 def setup(nbot):
     nbot.add_cog(music(nbot))
-

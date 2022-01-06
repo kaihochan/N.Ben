@@ -23,11 +23,13 @@ class nben(commands.Cog):
         await ctx.send(jdata['NBENGIF'])
         
     # comment &&backpack, response his backpack
-    async def backpack(self, ctx)
+    @commands.command()
+    async def backpack(self, ctx):
         await ctx.send(jdata['NBENBACKPACK'])
         
     # comment &&nteam, response his backpack
-    async def backpack(self, ctx)
+    @commands.command()
+    async def nteam(self, ctx):
         await ctx.send(jdata['TEAMNBEN'])
 
 def setup(bot):

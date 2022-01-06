@@ -21,6 +21,14 @@ class nben(commands.Cog):
     @commands.command()
     async def smile(self, ctx):
         await ctx.send(jdata['NBENGIF'])
+        
+    # comment &&backpack, response his backpack
+    async def backpack(self, ctx)
+        await ctx.send(jdata['NBENBACKPACK'])
+        
+    # comment &&nteam, response his backpack
+    async def backpack(self, ctx)
+        await ctx.send(jdata['TEAMNBEN'])
 
 def setup(bot):
     bot.add_cog(nben(bot))

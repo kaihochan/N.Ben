@@ -15,9 +15,14 @@ intents = discord.Intents.default()
 intents.members = True
 intents.messages = True
 
+# help command
+class help(commands.HelpCommand):
+    def __init__(self):
+        super().__init__()
+
 # nbot = N.Ben
 nbot = commands.Bot(
-        command_prefix='&&',
+        command_prefix='&',
         intents=intents, 
         fetch_offline_members=True)
 

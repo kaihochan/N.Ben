@@ -3,6 +3,7 @@ from discord import client
 from discord import activity
 from discord.ext import commands
 from youtube_dl.downloader import external
+import os
 
 import json
 with open('setting.json', mode='r', encoding='utf8') as jfile:

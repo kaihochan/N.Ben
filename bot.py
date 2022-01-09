@@ -4,6 +4,7 @@ from discord import activity
 from discord.ext import commands
 
 import os
+import keep_alive
 
 # add other event here for further uses
 
@@ -58,4 +59,5 @@ for loadfile in os.listdir('./cogs'):
     if loadfile.endswith('.py'):
         nbot.load_extension(f'cogs.{loadfile[:-3]}')
 
+keep_alive.keep_alive()
 nbot.run(jdata['TOKEN'])

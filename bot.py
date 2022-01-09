@@ -5,6 +5,8 @@ from discord.ext import commands
 
 import os
 
+# add other event here for further uses
+
 # setting import
 import json
 with open('setting.json', mode='r', encoding='utf8') as jfile:

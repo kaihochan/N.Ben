@@ -16,10 +16,15 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 | Command | Usage | Objective |
 | :---- | :----| :----|
 | `join` | `&join` | Join/Change to current voice channel |
+| `j` | `&j` | Shorthand of `&join` |
 | `discon` | `&discon` | Leave voice channel |
+| `ds` | `&ds` | Shorthand of `&discon` |
 | `play` | `&play *url*` | Play YouTube video, if it is playing then load into queue <br> *Directly join/change to current voice channel if haven't* |
+| `p` | `&p *url*` | Shorthand of `&play *url*` |
 | `queue` | `&queue` | List out all the song in queue |
+| `q` | `&q` | Shorthand of `&queue` |
 | `skip` | `&skip` | Skip current song |
+| `fs` | `&fs` | Shorthand of `&skip` |
 | `pause` | `&pause` | Pause current song |
 | `resume` | `&resume` | Resume playing song |
 

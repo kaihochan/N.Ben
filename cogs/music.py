@@ -42,6 +42,9 @@ class music(commands.Cog):
                 ctr00 -= 1
                 ctx.voice_client.play(source_q, after=lambda x=None: self.load_queue(ctx=ctx))
                 self.client.dispatch("queue_load", ctx)
+        elif ctr00 == -1:
+            ctx.voice_client.stop()
+            
     
     # command &&j, lazy version of &&skip
     @commands.command()
@@ -85,7 +88,7 @@ class music(commands.Cog):
     # command &&play url, play youtube/youtube-dl supported video
     @commands.command()
     async def play(self, ctx, url):
-        global ctr00
+        global ctr00, v_title_pe, v_url_pe, v_uploader_pe, request_pe
         embed = discord.Embed()
         if ctx.author.voice is None:
             embed.description = "❎ You are not in any voice channel, can't play any song"
@@ -95,13 +98,18 @@ class music(commands.Cog):
             await ctx.invoke(self.join)
 
         FFMPEG_OPT = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
-        YDL_OPT = {'format': "bestaudio", 'username': jdata['YT_EMAIL'], 'password': jdata['YT_PW']}
+        YDL_OPT = { 'format': 'bestaudio', 
+                    'username': jdata['YT_EMAIL'], 
+                    'password': jdata['YT_PW'], 
+                    'cookiefile': 'cookies.txt',
+                    'geo_bypass_country': 'JP'}
         v_client = ctx.voice_client
+        
         with youtube_dl.YoutubeDL(YDL_OPT) as ytDL:
             info = ytDL.extract_info(url, download=False)
             v_title = info.get('title', None)
-            v_url = info.get("url", None)
-            v_uploader = info.get("uploader", None)
+            v_url = info.get('url', None)
+            v_uploader = info.get('uploader', None)
             url2 = info['formats'][0]['url']
             source = await discord.FFmpegOpusAudio.from_probe(url2, **FFMPEG_OPT)
             
@@ -120,6 +128,11 @@ class music(commands.Cog):
                 v_uploader_q = v_uploader
                 request_q = ctx.author.mention
         
+        v_title_pe = v_title_q
+        v_url_pe = v_url_q
+        v_uploader_pe = v_uploader_q
+        request_pe = ctx.author.mention
+
         v_client.play(source_q, after=lambda x=None: self.load_queue(ctx=ctx))
         embed.title = f'Now Playing 🎵 {v_title_q} by {v_uploader_q}'
         embed.url = v_url_q
@@ -152,6 +165,8 @@ class music(commands.Cog):
                 embed2.url = v_url_q
                 embed2.description = f'Queued by [{request_q}]'
                 await ctx.send(embed=embed2)
+        else:
+            ctx.voice_client.stop()
 
     # command &&pause, puase music play by bot
     @commands.command()
@@ -186,6 +201,24 @@ class music(commands.Cog):
                 output += f'{i+1}: {queue[i][1]}\r\n'
             output += '```'
             await ctx.send(output)
+
+    # command &&np, check now playing
+    @commands.command()
+    async def np(self, ctx):
+        global v_title_pe, v_url_pe, v_uploader_pe, request_pe
+        embed = discord.Embed()
+        if ctx.voice_client is None:
+            embed.description = 'I am not in a voice channel.'
+            await ctx.send(embed=embed)
+            return
+        
+        if ctx.voice_client.is_playing():
+            embed.title = f'Now Playing 🎵 {v_title_pe} by {v_uploader_pe}'
+            embed.url = v_url_pe
+            embed.description = f'Queued by [{request_pe}]'
+        else:
+            embed.description = 'No song is playing now.'
+        await ctx.send(embed=embed)
 
 def setup(nbot):
     nbot.add_cog(music(nbot))

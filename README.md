@@ -23,22 +23,23 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 | `p` | `&p *url*` | Shorthand of `&play *url*` |
 | `queue` | `&queue` | List out all the song in queue |
 | `q` | `&q` | Shorthand of `&queue` |
+| `np` | `&np` | Show info of current song |
 | `skip` | `&skip` | Skip current song |
 | `fs` | `&fs` | Shorthand of `&skip` |
 | `pause` | `&pause` | Pause current song |
 | `resume` | `&resume` | Resume playing song |
 
-## Current updates (23/1/2022)
-1. Remaked queue message, added video name, user who queue, and direct hyperlink.
-2. Added field and arguments related to YouTube account on youtube-dl.
-3. Added `&queue` function to check songs in queue.
-4. Added shorthand <s>lazyfuck</s> commands for existing commands
+## Current updates (29/1/2022)
+1. Added `&np` function to check current song.
+2. Add user cookies to play age-restricted videos, while YouTube account details is kept. 
 
 ## Current bugs
-1. Unable to play age-restricted videos due to HTTP Error 400 (bad request).
-2. From time to time song playing might lags.
+1. From time to time song playing might lags.
+2. Geo-blocking from videos which able to seen in my current location (HK)
 
 ## Planning
 1. Word appear frequency from specific user message (MySQL).
-3. Add user cookies to replace YouTube account.
-4. Add search video function to `play` command.
+2. Add search video function to `play` command.
+3. Add remove videos on queue function.
+4. Add proxy server or vpn to address geo-blocking on server side.
+5. Show time playing in `np` command.

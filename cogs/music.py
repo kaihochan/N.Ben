@@ -1,9 +1,11 @@
+from time import time
 from urllib import request
 import discord
 from discord import embeds
 from discord.channel import VoiceChannel
 from discord.ext import commands
 import youtube_dl
+import datetime
 
 # import json file, youtube email and password inside
 import json
@@ -14,6 +16,10 @@ with open('setting.json', mode='r', encoding='utf8') as jfile:
 # queue for multimedia flow control
 queue = []; ctr00 = -1
 v_title_pe = None; v_url_pe = None; v_uploader_pe = None; request_pe = None
+
+# global variable
+# time calculation for &&np
+timeNow = None; timeVideo = None; timeStart = None; timeEnd = None
 
 # multimedia related function
 class music(commands.Cog):
@@ -31,13 +37,16 @@ class music(commands.Cog):
 
     # called by play after finish a song, trigger event to show info of next song
     def load_queue(self, ctx):
-        global ctr00, v_title_pe, v_url_pe, v_uploader_pe, request_pe
+        global ctr00, v_title_pe, v_url_pe, v_uploader_pe, request_pe, timeVideo, timeStart, timeEnd
         if ctr00 != -1:
                 source_q = queue[0][0]
                 v_title_pe = queue[0][1]
                 v_url_pe = queue[0][2]
                 v_uploader_pe = queue[0][3]
                 request_pe = queue[0][4]
+                timeVideo = datetime.timedelta(seconds=queue[0][5])
+                timeStart = datetime.datetime.now()
+                timeEnd = timeStart + timeVideo
                 queue.pop(0)
                 ctr00 -= 1
                 ctx.voice_client.play(source_q, after=lambda x=None: self.load_queue(ctx=ctx))
@@ -88,7 +97,7 @@ class music(commands.Cog):
     # command &&play url, play youtube/youtube-dl supported video
     @commands.command()
     async def play(self, ctx, url):
-        global ctr00, v_title_pe, v_url_pe, v_uploader_pe, request_pe
+        global ctr00, v_title_pe, v_url_pe, v_uploader_pe, request_pe, timeVideo, timeStart, timeEnd
         embed = discord.Embed()
         if ctx.author.voice is None:
             embed.description = "❎ You are not in any voice channel, can't play any song"
@@ -104,18 +113,19 @@ class music(commands.Cog):
                     'cookiefile': 'cookies.txt',
                     'geo_bypass_country': 'JP'}
         v_client = ctx.voice_client
-        
+
         with youtube_dl.YoutubeDL(YDL_OPT) as ytDL:
             info = ytDL.extract_info(url, download=False)
             v_title = info.get('title', None)
             v_url = info.get('url', None)
             v_uploader = info.get('uploader', None)
+            v_duration = info.get('duration', None)
             url2 = info['formats'][0]['url']
             source = await discord.FFmpegOpusAudio.from_probe(url2, **FFMPEG_OPT)
             
         if v_client.is_playing():
             ctr00 += 1
-            queue.append([source, v_title, v_url, v_uploader, ctx.author.mention])
+            queue.append([source, v_title, v_url, v_uploader, ctx.author.mention, v_duration])
             embed2 = discord.Embed(title=f'Added to queue, position {ctr00+1}')
             embed2.description = f'[{v_title} by {v_uploader}]({url})\r\nQueued by [{ctx.author.mention}]'
             await ctx.send(embed=embed2)
@@ -132,6 +142,9 @@ class music(commands.Cog):
         v_url_pe = v_url_q
         v_uploader_pe = v_uploader_q
         request_pe = ctx.author.mention
+        timeVideo = datetime.timedelta(seconds=v_duration)
+        timeStart = datetime.datetime.now()
+        timeEnd = timeStart + timeVideo
 
         v_client.play(source_q, after=lambda x=None: self.load_queue(ctx=ctx))
         embed.title = f'Now Playing 🎵 {v_title_q} by {v_uploader_q}'
@@ -147,26 +160,39 @@ class music(commands.Cog):
     # command &&skip, skip song and load next song
     @commands.command()
     async def skip(self, ctx):
-        global ctr00
+        global ctr00, v_title_pe, v_url_pe, v_uploader_pe, request_pe, timeVideo, timeStart, timeEnd
+        embed = discord.Embed()
+
+        if ctx.voice_client is None:
+            embed.description = 'I am not in a voice channel.'
+            await ctx.send(embed=embed)
+            return
+        
+        if not(ctx.voice_client.is_playing()):
+            embed.description = 'I am not playing anything.'
+            await ctx.send(embed=embed)
+            return
+
         ctx.voice_client.stop()
-        embed = discord.Embed(description="⏭️ Skipped")
+        embed.description = "⏭️ Skipped"
         await ctx.send(embed=embed)
         if ctr00 != -1:
                 source_q = queue[0][0]
-                v_title_q = queue[0][1]
-                v_url_q = queue[0][2]
-                v_uploader_q = queue[0][3]
-                request_q = queue[0][4]
+                v_title_pe = queue[0][1]
+                v_url_pe = queue[0][2]
+                v_uploader_pe = queue[0][3]
+                request_pe = queue[0][4]
+                timeVideo = datetime.timedelta(seconds=queue[0][5])
+                timeStart = datetime.datetime.now()
+                timeEnd = timeStart + timeVideo
                 queue.pop(0)
                 ctr00 -= 1
                 ctx.voice_client.play(source_q, after=lambda x=None: self.load_queue(ctx=ctx))
                 embed2 = discord.Embed()
-                embed2.title = f'Now Playing 🎵 {v_title_q} by {v_uploader_q}'
-                embed2.url = v_url_q
-                embed2.description = f'Queued by [{request_q}]'
+                embed2.title = f'Now Playing 🎵 {v_title_pe} by {v_uploader_pe}'
+                embed2.url = v_url_pe
+                embed2.description = f'Queued by [{request_pe}]'
                 await ctx.send(embed=embed2)
-        else:
-            ctx.voice_client.stop()
 
     # command &&pause, puase music play by bot
     @commands.command()
@@ -205,7 +231,7 @@ class music(commands.Cog):
     # command &&np, check now playing
     @commands.command()
     async def np(self, ctx):
-        global v_title_pe, v_url_pe, v_uploader_pe, request_pe
+        global v_title_pe, v_url_pe, v_uploader_pe, request_pe, timeNow, timeStart, timeEnd
         embed = discord.Embed()
         if ctx.voice_client is None:
             embed.description = 'I am not in a voice channel.'
@@ -213,12 +239,41 @@ class music(commands.Cog):
             return
         
         if ctx.voice_client.is_playing():
+            timeNow = datetime.datetime.now()
+            timePast = timeNow - timeStart
+            timeDuration = timeEnd - timeStart
+            Factor = int(timePast / timeDuration * 20)
+            StatusBar = ['▱'] * 20
+            for n in range(Factor+1):
+                StatusBar[n] = '▰'
+            StatusBarString = ''.join(StatusBar)
             embed.title = f'Now Playing 🎵 {v_title_pe} by {v_uploader_pe}'
             embed.url = v_url_pe
-            embed.description = f'Queued by [{request_pe}]'
+            embed.description = f'Queued by [{request_pe}]\r\n{self.timedelta_str(ctx, timePast)} {StatusBarString} {self.timedelta_str(ctx, timeDuration)}'
         else:
             embed.description = 'No song is playing now.'
         await ctx.send(embed=embed)
+
+    def timedelta_str(self, ctx, timedelta):
+        second = timedelta.total_seconds()
+        tthr = int(second // 3600)
+        ttmin = int((second - (tthr * 3600)) // 60)
+        tts = int((second - (tthr * 3600)) % 60)
+
+        if tthr > 0:
+            outstr = f'{tthr}:'
+        
+        if (tthr > 0) & (ttmin < 10):
+            outstr += f'0{ttmin}:'
+        else:
+            outstr += f'{ttmin}:'
+        
+        if tts < 10:
+            outstr += f'0{tts}'
+        else:
+            outstr += f'{tts}'
+
+        return outstr
 
 def setup(nbot):
     nbot.add_cog(music(nbot))

@@ -29,17 +29,16 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 | `pause` | `&pause` | Pause current song |
 | `resume` | `&resume` | Resume playing song |
 
-## Current updates (29/1/2022)
-1. Added `&np` function to check current song.
-2. Add user cookies to play age-restricted videos, while YouTube account details is kept. 
+## Current updates (31/1/2022)
+1. Show time playing in `np` command.
+2. Fix auto-stop all song when using `skip` command. 
 
 ## Current bugs
 1. From time to time song playing might lags.
-2. Geo-blocking from videos which able to seen in my current location (HK)
+2. Geo-blocked in some videos which able to seen in my current location (HK)
 
 ## Planning
 1. Word appear frequency from specific user message (MySQL).
 2. Add search video function to `play` command.
 3. Add remove videos on queue function.
 4. Add proxy server or vpn to address geo-blocking on server side.
-5. Show time playing in `np` command.

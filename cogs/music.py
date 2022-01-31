@@ -262,12 +262,10 @@ class music(commands.Cog):
 
         if tthr > 0:
             outstr = f'{tthr}:'
-        
         if (tthr > 0) & (ttmin < 10):
             outstr += f'0{ttmin}:'
         else:
             outstr += f'{ttmin}:'
-        
         if tts < 10:
             outstr += f'0{tts}'
         else:

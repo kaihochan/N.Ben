@@ -24,8 +24,8 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 | `queue` | `&queue` | List out all the song in queue |
 | `q` | `&q` | Shorthand of `&queue` |
 | `np` | `&np` | Show info of current song |
-| `remove` | `&remove` <br> `&remove *num*` | Remove songs in queue <br> If you don't know the queue number of target video use the upper usage, will show the list and ask you to input the number |
-| `rr` | `&rr` <br> `&rr *num*` | Shorthand of `&remove` |
+| `remove` | `&remove` <br> `&remove *number*` | Remove songs in queue <br> If you don't know the queue number of target video use the upper usage, will show the list and ask you to input the number |
+| `rr` | `&rr` <br> `&rr *number*` | Shorthand of `&remove` |
 | `skip` | `&skip` | Skip current song |
 | `fs` | `&fs` | Shorthand of `&skip` |
 | `pause` | `&pause` | Pause current song |

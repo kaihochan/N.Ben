@@ -27,7 +27,8 @@ class help(commands.HelpCommand):
 nbot = commands.Bot(
         command_prefix='&',
         intents=intents, 
-        fetch_offline_members=True)
+        fetch_offline_members=True,
+        case_insensitive = True)
 
 # startup with status
 # startup notification on background console

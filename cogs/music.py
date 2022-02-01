@@ -14,8 +14,10 @@ with open('setting.json', mode='r', encoding='utf8') as jfile:
 
 # globol variable
 # queue for multimedia flow control
+FFMPEG_OPT = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 queue = []; ctr00 = -1
 v_title_pe = None; v_url_pe = None; v_uploader_pe = None; request_pe = None
+url2_pass = None
 
 # global variable
 # time calculation for &&np
@@ -29,6 +31,9 @@ class music(commands.Cog):
     # event trigger by load_queue(ctx)
     @commands.Cog.listener()
     async def on_queue_load(self, ctx):
+        global url2_pass
+        source = await discord.FFmpegOpusAudio.from_probe(url2_pass, **FFMPEG_OPT)
+        ctx.voice_client.play(source, after=lambda x=None: self.load_queue(ctx=ctx))
         embed2 = discord.Embed()
         embed2.title = f'Now Playing 🎵 {v_title_pe} by {v_uploader_pe}'
         embed2.url = v_url_pe
@@ -38,8 +43,9 @@ class music(commands.Cog):
     # called by play after finish a song, trigger event to show info of next song
     def load_queue(self, ctx):
         global ctr00, v_title_pe, v_url_pe, v_uploader_pe, request_pe, timeVideo, timeStart, timeEnd
+        global url2_pass
         if ctr00 != -1:
-                source_q = queue[0][0]
+                url2_pass = queue[0][0]
                 v_title_pe = queue[0][1]
                 v_url_pe = queue[0][2]
                 v_uploader_pe = queue[0][3]
@@ -49,7 +55,6 @@ class music(commands.Cog):
                 timeEnd = timeStart + timeVideo
                 queue.pop(0)
                 ctr00 -= 1
-                ctx.voice_client.play(source_q, after=lambda x=None: self.load_queue(ctx=ctx))
                 self.client.dispatch("queue_load", ctx)
         elif ctr00 == -1:
             ctx.voice_client.stop()
@@ -98,6 +103,7 @@ class music(commands.Cog):
     @commands.command()
     async def play(self, ctx, url):
         global ctr00, v_title_pe, v_url_pe, v_uploader_pe, request_pe, timeVideo, timeStart, timeEnd
+        global FFMPEG_OPT
         embed = discord.Embed()
         if ctx.author.voice is None:
             embed.description = "❎ You are not in any voice channel, can't play any song"
@@ -106,11 +112,11 @@ class music(commands.Cog):
         if ctx.voice_client is None:
             await ctx.invoke(self.join)
 
-        FFMPEG_OPT = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
         YDL_OPT = { 'format': 'bestaudio', 
                     'username': jdata['YT_EMAIL'], 
                     'password': jdata['YT_PW'], 
                     'cookiefile': 'cookies.txt',
+                    'proxy': jdata['YT-DL_PROXY'],
                     'geo_bypass_country': 'JP'}
         v_client = ctx.voice_client
 
@@ -121,35 +127,28 @@ class music(commands.Cog):
             v_uploader = info.get('uploader', None)
             v_duration = info.get('duration', None)
             url2 = info['formats'][0]['url']
-            source = await discord.FFmpegOpusAudio.from_probe(url2, **FFMPEG_OPT)
             
         if v_client.is_playing():
             ctr00 += 1
-            queue.append([source, v_title, v_url, v_uploader, ctx.author.mention, v_duration])
+            queue.append([url2, v_title, v_url, v_uploader, ctx.author.mention, v_duration])
             embed2 = discord.Embed(title=f'Added to queue, position {ctr00+1}')
             embed2.description = f'[{v_title} by {v_uploader}]({url})\r\nQueued by [{ctx.author.mention}]'
             await ctx.send(embed=embed2)
-            return
-        elif not(v_client.is_playing()):
-            if ctr00 == -1:
-                source_q = source
-                v_title_q = v_title
-                v_url_q = v_url
-                v_uploader_q = v_uploader
-                request_q = ctx.author.mention
+            return     
         
-        v_title_pe = v_title_q
-        v_url_pe = v_url_q
-        v_uploader_pe = v_uploader_q
+        source = await discord.FFmpegOpusAudio.from_probe(url2, **FFMPEG_OPT)
+        v_title_pe = v_title
+        v_url_pe = v_url
+        v_uploader_pe = v_uploader
         request_pe = ctx.author.mention
         timeVideo = datetime.timedelta(seconds=v_duration)
         timeStart = datetime.datetime.now()
         timeEnd = timeStart + timeVideo
 
-        v_client.play(source_q, after=lambda x=None: self.load_queue(ctx=ctx))
-        embed.title = f'Now Playing 🎵 {v_title_q} by {v_uploader_q}'
-        embed.url = v_url_q
-        embed.description = f'Queued by [{request_q}]'
+        v_client.play(source, after=lambda x=None: self.load_queue(ctx=ctx))
+        embed.title = f'Now Playing 🎵 {v_title_pe} by {v_uploader_pe}'
+        embed.url = v_url_pe
+        embed.description = f'Queued by [{request_pe}]'
         await ctx.send(embed=embed)
 
     # command &&fs, lazy version of &&skip
@@ -161,6 +160,7 @@ class music(commands.Cog):
     @commands.command()
     async def skip(self, ctx):
         global ctr00, v_title_pe, v_url_pe, v_uploader_pe, request_pe, timeVideo, timeStart, timeEnd
+        global FFMPEG_OPT
         embed = discord.Embed()
 
         if ctx.voice_client is None:
@@ -177,7 +177,7 @@ class music(commands.Cog):
         embed.description = "⏭️ Skipped"
         await ctx.send(embed=embed)
         if ctr00 != -1:
-                source_q = queue[0][0]
+                url2 = queue[0][0]
                 v_title_pe = queue[0][1]
                 v_url_pe = queue[0][2]
                 v_uploader_pe = queue[0][3]
@@ -187,7 +187,9 @@ class music(commands.Cog):
                 timeEnd = timeStart + timeVideo
                 queue.pop(0)
                 ctr00 -= 1
-                ctx.voice_client.play(source_q, after=lambda x=None: self.load_queue(ctx=ctx))
+
+                source = await discord.FFmpegOpusAudio.from_probe(url2, **FFMPEG_OPT)
+                ctx.voice_client.play(source, after=lambda x=None: self.load_queue(ctx=ctx))
                 embed2 = discord.Embed()
                 embed2.title = f'Now Playing 🎵 {v_title_pe} by {v_uploader_pe}'
                 embed2.url = v_url_pe
@@ -259,6 +261,7 @@ class music(commands.Cog):
         tthr = int(second // 3600)
         ttmin = int((second - (tthr * 3600)) // 60)
         tts = int((second - (tthr * 3600)) % 60)
+        outstr = ''
 
         if tthr > 0:
             outstr = f'{tthr}:'
@@ -272,6 +275,74 @@ class music(commands.Cog):
             outstr += f'{tts}'
 
         return outstr
+
+    # command &&rr, lazy version of &&remove
+    @commands.command()
+    async def rr(self, ctx, q_num=None):
+        await ctx.invoke(self.client.get_command('remove'), q_num=q_num)
+
+    # command &&remove, remove song in queue
+    @commands.command()
+    async def remove(self, ctx, q_num=None):
+        global ctr00
+        if q_num != None:
+            rr_q = int(q_num)
+            embed = discord.Embed()
+            if ctr00 < 0:
+                embed.description = 'No song in queue for you to remove.'
+                await ctx.send(embed=embed)
+                return
+            elif (rr_q - 1) > ctr00:
+                embed.description = 'Dont have such many song.'
+                await ctx.send(embed=embed)
+                return
+            elif (rr_q - 1) < 0:
+                embed.description = 'Invalid number.'
+                await ctx.send(embed=embed)
+                return
+            else:
+                embed.title = 'Removed from queue'
+                embed.description = f'[{queue[rr_q-1][1]} by {queue[rr_q-1][3]}]({queue[rr_q-1][2]})'
+                await ctx.send(embed=embed)
+                queue.pop(rr_q-1)
+                ctr00 -= 1
+                return
+        else:
+            embed2 = discord.Embed()
+            if ctr00 < 0:
+                embed2.description = 'No song in queue for you to remove.'
+                await ctx.send(embed=embed2)
+                return
+            else:
+                output = '```CSS\r\n[Input the queue number you want to remove the song]\r\n'
+                for i in range(ctr00+1):
+                    output += f'{i+1}: {queue[i][1]}\r\n'
+                output += 'c: Cancel action'
+                output += '```'
+                await ctx.send(output)
+                msg = await self.client.wait_for('message', check=lambda message: (message.author == ctx.author) & (message.channel == ctx.channel), timeout=None)
+                q_num2 = msg.content
+                if q_num2 == 'c':
+                    embed2.description = 'Action cancelled.'
+                    await ctx.send(embed=embed2)
+                    return
+                else:
+                    rr_q2 = int(q_num2)
+                    if (rr_q2 - 1) > ctr00:
+                        embed2.description = 'Dont have such many song. Action cancelled.'
+                        await ctx.send(embed=embed2)
+                        return
+                    elif (rr_q2 - 1) < 0:
+                        embed2.description = 'Invalid number. Action cancelled.'
+                        await ctx.send(embed=embed2)
+                        return
+                    else:
+                        embed2.title = 'Removed from queue'
+                        embed2.description = f'[{queue[rr_q2-1][1]} by {queue[rr_q2-1][3]}]({queue[rr_q2-1][2]})'
+                        await ctx.send(embed=embed2)
+                        queue.pop(rr_q2-1)
+                        ctr00 -= 1
+                        return
 
 def setup(nbot):
     nbot.add_cog(music(nbot))

@@ -1,6 +1,10 @@
 # N.Ben
 ## This is the update log of the discord BOT, N.Ben
-### Current updates (31/1/2022)
+### Current updates (2/2/2022)
+1. Fix the case sensitive problem, now commands can be use in both lower case and upper case
+2. Proxy server options added, to avoid geo-blocking in some video which is visible in my location (HK) but not server's (US)
+3. Add `&remove` function to remove songs in queue.
+### Updates (31/1/2022)
 1. Show time playing in `np` command.
 2. Fix auto-stop all song when using `skip` command. 
 ### Updates (29/1/2022)

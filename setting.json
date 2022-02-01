@@ -2,6 +2,7 @@
     "TOKEN": "TOKEN HERE",
     "YT_EMAIL": "EMAIL HERE",
     "YT_PW": "PW HERE",
+    "YT-DL_PROXY": "socks5://150.95.151.68:8181",
     "NBENGIF": "https://i.imgur.com/8jXHikK.gif",
     "NBENBACKPACK": "https://i.imgur.com/wX26U8W.png",
     "TEAMNBEN": "https://na.cx/i/DYhaPCZ.jpg"

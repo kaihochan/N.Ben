@@ -24,21 +24,27 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 | `queue` | `&queue` | List out all the song in queue |
 | `q` | `&q` | Shorthand of `&queue` |
 | `np` | `&np` | Show info of current song |
+| `remove` | `&remove` <br> `&remove *number*` | Remove songs in queue <br> If you don't know the queue number of target video use the upper usage, will show the list and ask you to input the number |
+| `rr` | `&rr` <br> `&rr *number*` | Shorthand of `&remove` |
 | `skip` | `&skip` | Skip current song |
 | `fs` | `&fs` | Shorthand of `&skip` |
 | `pause` | `&pause` | Pause current song |
 | `resume` | `&resume` | Resume playing song |
 
-## Current updates (31/1/2022)
-1. Show time playing in `np` command.
-2. Fix auto-stop all song when using `skip` command. 
+## Current updates (2/2/2022)
+1. Fix the case sensitive problem, now commands can be use in both lower case and upper case
+2. Proxy server options added, to avoid geo-blocking in some video which is visible in my location (HK) but not server's (US)
+3. Add `&remove` function to remove songs in queue.
 
 ## Current bugs
-1. From time to time song playing might lags.
-2. Geo-blocked in some videos which able to seen in my current location (HK)
+1. From time to time song playing might lags, which already move async probe part to when the song is about to play.
+2. Proxy server is unstable, proxy server option is blanked to avoid issue.
 
 ## Planning
 1. Word appear frequency from specific user message (MySQL).
 2. Add search video function to `play` command.
-3. Add remove videos on queue function.
-4. Add proxy server or vpn to address geo-blocking on server side.
+3. Considering to implement vpn if proxy is not stable.
+
+## Additional information
+1. Proxy resource: http://www.aliveproxy.com/proxy-list/proxies.aspx/Japan-jp
+2. Server keep alive function came from Proladon, https://www.youtube.com/c/Proladon

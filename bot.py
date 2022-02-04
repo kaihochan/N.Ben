@@ -40,14 +40,6 @@ async def on_ready():
         afk=False)
     print('Ready! N.Ben get his backpack ready!')
 
-# command &&echo, repeat wordings 
-'''
-@nbot.event
-async def on_message(message):
-    if (message.author != nbot.user):
-        if message.content.startswith("&&echo "):
-            await message.channel.send(message.content[7:].format(message))'''
-
 @nbot.command()
 async def load(ctx, ext):
     nbot.load_extension(f'cogs.{ext}')

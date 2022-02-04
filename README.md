@@ -31,19 +31,20 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 | `pause` | `&pause` | Pause current song |
 | `resume` | `&resume` | Resume playing song |
 
-## Current updates (2/2/2022)
-1. Fix the case sensitive problem, now commands can be use in both lower case and upper case
-2. Proxy server options added, to avoid geo-blocking in some video which is visible in my location (HK) but not server's (US)
-3. Add `&remove` function to remove songs in queue.
+## Current updates (4/2/2022)
+1. Fix **urgent issue**, songs can be play and queue in different server without interfere with each other.
+2. Remove unnecessery code in bot.py
 
 ## Current bugs
-1. From time to time song playing might lags, which already move async probe part to when the song is about to play.
+1. From time to time song playing might lags, which already move async probe part to when the song is about to play. Unable to locate the source.
 2. Proxy server is unstable, proxy server option is blanked to avoid issue.
+3. By stackoverflow and youtube-dl reddit, using account and password in youtube-dl isn't viable anymore, considering remove options in near future.
 
 ## Planning
 1. Word appear frequency from specific user message (MySQL).
 2. Add search video function to `play` command.
-3. Considering to implement vpn if proxy is not stable.
+3. Considering to implement vpn on a Ubuntu server, might change the host to home hosting.
+4. Play the song in queue after disconnecting from voice channel.
 
 ## Additional information
 1. Proxy resource: http://www.aliveproxy.com/proxy-list/proxies.aspx/Japan-jp

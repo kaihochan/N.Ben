@@ -31,14 +31,16 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 | `pause` | `&pause` | Pause current song |
 | `resume` | `&resume` | Resume playing song |
 
-## Current updates (4/2/2022)
-1. Fix **urgent issue**, songs can be play and queue in different server without interfere with each other.
-2. Remove unnecessery code in bot.py
+## Current updates (11/4/2022)
+1. Change all array in various list into class objects, Queue object and TimeList object.
+2. Use yt-dlp instead of youtube-dl.
+3. Remove options related to account and proxy in json file.
+4. Remove redundant coding in `rr` and `np` function.
+5. yt-dlp option add no playlist to avoid runtime error in `play` and `p`.
 
 ## Current bugs
 1. From time to time song playing might lags, which already move async probe part to when the song is about to play. Unable to locate the source.
-2. Proxy server is unstable, proxy server option is blanked to avoid issue.
-3. By stackoverflow and youtube-dl reddit, using account and password in youtube-dl isn't viable anymore, considering remove options in near future.
+2. Sometimes unable to play some song, which ffmpeg will give error as <span style="color:red"> Output file #0 does not contain any stream </span>.
 
 ## Planning
 1. Word appear frequency from specific user message (MySQL).
@@ -47,5 +49,5 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 4. Play the song in queue after disconnecting from voice channel.
 
 ## Additional information
-1. Proxy resource: http://www.aliveproxy.com/proxy-list/proxies.aspx/Japan-jp
-2. Server keep alive function came from Proladon, https://www.youtube.com/c/Proladon
+1. Server keep alive function came from Proladon, https://www.youtube.com/c/Proladon
+P.S. This is not working now as the ping won't keep server alive.

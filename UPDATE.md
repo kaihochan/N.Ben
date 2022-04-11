@@ -1,7 +1,14 @@
 # N.Ben
 ## This is the update log of the discord BOT, N.Ben
-## Current updates (4/2/2022)
+### Current updates (11/4/2022)
+1. Change all array in various list into class objects, Queue object and TimeList object.
+2. Use yt-dlp instead of youtube-dl.
+3. Remove options related to account and proxy in json file.
+4. Remove redundant coding in `rr` and `np` function.
+5. yt-dlp option add no playlist to avoid runtime error in `play` and `p`.
+### Updates (4/2/2022)
 1. Fix **urgent issue**, songs can be play and queue in different server without interfere with each other.
+2. Remove unnecessery code in bot.py
 ### Updates (2/2/2022)
 1. Fix the case sensitive problem, now commands can be use in both lower case and upper case
 2. Proxy server options added, to avoid geo-blocking in some video which is visible in my location (HK) but not server's (US)

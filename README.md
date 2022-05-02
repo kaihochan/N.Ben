@@ -64,5 +64,5 @@ Following commands only made available for owner of BOT.
 3. Play the song in queue after disconnecting from voice channel.
 
 ## Additional information
-Tweepy, Python library of Twitter API: https://www.tweepy.org/
-discord.py, Python library of Discord API: https://discordpy.readthedocs.io/en/stable/
+1. Tweepy, Python library of Twitter API: https://www.tweepy.org/
+2. discord.py, Python library of Discord API: https://discordpy.readthedocs.io/en/stable/

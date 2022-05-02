@@ -1,20 +1,8 @@
-from distutils.command.upload import upload
-from http import server
-from re import S
-from time import time
-from typing import Any
-from urllib import request
 import discord
-from discord import embeds
-from discord.channel import VoiceChannel
 from discord.ext import commands
 import yt_dlp
+import youtube_dl
 import datetime
-
-# import json file, youtube email and password inside
-import json
-with open('setting.json', mode='r', encoding='utf8') as jfile:
-    jdata = json.load(jfile)
 
 # class declear
 # serve for global list
@@ -33,7 +21,6 @@ class TimeList:
         self.t_start = None
         self.t_end = None
 
-
 # globol list
 # option for ydl, ffmpeg
 FFMPEG_OPT = {  'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 
@@ -41,7 +28,7 @@ FFMPEG_OPT = {  'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect
 YDL_OPT = { 'format': 'bestaudio',
             'perfer_ffmpeg': True,
             'noplaylist': True,
-            'cookiefile': 'cookies.txt',
+            'cookiefile': 'settings/cookies.txt',
             'geo_bypass_country': 'JP'}
 
 # queue for multimedia flow control
@@ -152,7 +139,7 @@ class music(commands.Cog):
         serverID = ctx.message.guild.id
         v_client = ctx.voice_client
 
-        with yt_dlp.YoutubeDL(YDL_OPT) as ytDL:
+        with youtube_dl.YoutubeDL(YDL_OPT) as ytDL:
             info = ytDL.extract_info(url, download=False)
             v_title = info.get('title', None)
             v_url = info.get('url', None)

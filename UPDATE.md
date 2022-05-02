@@ -1,6 +1,13 @@
 # N.Ben
 ## This is the update log of the discord BOT, N.Ben
-### Current updates (11/4/2022)
+### Current updates (3/5/2022)
+1. Added Twitter function set, only avaliable for BOT owner.
+2. Added Events set, will execute auto-reply and auto-disconnect.
+3. Changed to home hosting, geo-block issue resolved, with keep_alive.py removed.
+4. Changed json file location.
+5. Switch back to youtube-dl as link retreve format of yt-dlp is differ from youtube-dl, causing error
+6. Added BOT execulsive role, name N.Ben, with permission of administrator.
+### Updates (11/4/2022)
 1. Change all array in various list into class objects, Queue object and TimeList object.
 2. Use yt-dlp instead of youtube-dl.
 3. Remove options related to account and proxy in json file.

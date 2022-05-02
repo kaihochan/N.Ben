@@ -30,13 +30,29 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 | `fs` | `&fs` | Shorthand of `&skip` |
 | `pause` | `&pause` | Pause current song |
 | `resume` | `&resume` | Resume playing song |
+### Twitter related
+Following commands only made available for owner of BOT.
+| Command | Usage | Objective |
+| :---- | :----| :----|
+| `starttwitter` | `&starttwitter` | Start post liked post of followed user in specified channel in each day 18:30 (GMT+8) |
+| `checkstwitter` | `&checkstwitter *username*` | Checks given Twitter username's ID |
+| `addtwitter` | `&addtwitter *username*` | Add given username, current channel into watchlist and save into json |
+### Events related
+| Event | Action |
+| :----| :----|
+| Text channel contain only DW with no case sensitive | Reply Gay |
+| Text channel contain only gay with no case sensitive | Reply DW |
+| Text channel contain DW and gay with no case sensitive | Reply Yes |
+| Text channel contain DW, not and gay with no case sensitive | Reply No |
+| If only BOT in voice channel | Leave channel in 60s if no one join that channel or disconnect BOT |
 
-## Current updates (11/4/2022)
-1. Change all array in various list into class objects, Queue object and TimeList object.
-2. Use yt-dlp instead of youtube-dl.
-3. Remove options related to account and proxy in json file.
-4. Remove redundant coding in `rr` and `np` function.
-5. yt-dlp option add no playlist to avoid runtime error in `play` and `p`.
+## Current updates (3/5/2022)
+1. Added Twitter function set, only avaliable for BOT owner.
+2. Added Events set, will execute auto-reply and auto-disconnect.
+3. Changed to home hosting, geo-block issue resolved, with keep_alive.py removed.
+4. Changed json file location.
+5. Switch back to youtube-dl as link retreve format of yt-dlp is differ from youtube-dl, causing error
+6. Added BOT execulsive role, name N.Ben, with permission of administrator.
 
 ## Current bugs
 1. From time to time song playing might lags, which already move async probe part to when the song is about to play. Unable to locate the source.
@@ -45,9 +61,8 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 ## Planning
 1. Word appear frequency from specific user message (MySQL).
 2. Add search video function to `play` command.
-3. Considering to implement vpn on a Ubuntu server, might change the host to home hosting.
-4. Play the song in queue after disconnecting from voice channel.
+3. Play the song in queue after disconnecting from voice channel.
 
 ## Additional information
-1. Server keep alive function came from Proladon, https://www.youtube.com/c/Proladon
-P.S. This is not working now as the ping won't keep server alive.
+Tweepy, Python library of Twitter API: https://www.tweepy.org/
+discord.py, Python library of Discord API: https://discordpy.readthedocs.io/en/stable/

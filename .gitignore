@@ -1,3 +1,4 @@
-
-confidential.kh
 *.kh
+__pycache__/*.*
+cogs/__pycache__/*.*
+ffmpeg/*.*

@@ -1,22 +1,17 @@
 import discord
-from discord import client
-from discord import activity
 from discord.ext import commands
 
 import os
-import keep_alive
-
-# add other event here for further uses
 
 # setting import
 import json
-with open('setting.json', mode='r', encoding='utf8') as jfile:
-    jdata = json.load(jfile)
+with open('settings/setting.json', mode='r', encoding='utf8') as dcfile:
+    dcdata = json.load(dcfile)
+    dcfile.close()
 
 # intents setup
 intents = discord.Intents.default()
 intents.members = True
-intents.messages = True
 
 # help command
 class help(commands.HelpCommand):
@@ -28,7 +23,8 @@ nbot = commands.Bot(
         command_prefix='&',
         intents=intents, 
         fetch_offline_members=True,
-        case_insensitive = True)
+        case_insensitive = True,
+        owner_ids=set(dcdata["OWNER"]))
 
 # startup with status
 # startup notification on background console
@@ -40,17 +36,35 @@ async def on_ready():
         afk=False)
     print('Ready! N.Ben get his backpack ready!')
 
-@nbot.command()
+# load function set in cogs folders
+# command hided, only available for owners
+@nbot.command(hidden=True)
+@commands.is_owner()
 async def load(ctx, ext):
     nbot.load_extension(f'cogs.{ext}')
+    embed = discord.Embed(description=f'✔️ {ext} loaded. Related functions available now.')
+    await ctx.send(embed=embed)
 
-@nbot.command()
+# unload function set in cogs folders
+# command hided, only available for owners
+@nbot.command(hidden=True)
+@commands.is_owner()
 async def unload(ctx, ext):
     nbot.unload_extension(f'cogs.{ext}')
+    embed = discord.Embed(description=f'❌ {ext} unloaded. Related functions unavailable now.')
+    await ctx.send(embed=embed)
+
+# reload function set in cogs folers
+# command hided, only available for owners
+@nbot.command(hidden=True)
+@commands.is_owner()
+async def reload(ctx, ext):
+    nbot.reload_extension(f'cogs.{ext}')
+    embed = discord.Embed(description=f'♻️ {ext} reloaded.')
+    await ctx.send(embed=embed)
 
 for loadfile in os.listdir('./cogs'):
     if loadfile.endswith('.py'):
         nbot.load_extension(f'cogs.{loadfile[:-3]}')
 
-keep_alive.keep_alive()
-nbot.run(jdata['TOKEN'])
+nbot.run(dcdata['TOKEN'])

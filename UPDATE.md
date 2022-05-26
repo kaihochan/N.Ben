@@ -1,12 +1,19 @@
 # N.Ben
 ## This is the update log of the discord BOT, N.Ben
-### Current updates (3/5/2022)
+### Current updates (26/5/2022)
+1. Added N-word counter, only count the n-words after joining the channels.
+2. Change music library from youtube-dl to yt-dlp, which seems fixed issue that song lags when playing.
+3. Using RegEx to find the right URL for playing video in music COG, fixed issue that some song is unable to play due to wrong link issue.
+4. Using RegEx to detect keywords in events.
+5. Added `&loop` fuction for looping same song.
+6. Added Misc object for storing looping status and number of songs in queue.
+7. Added Admin function set, only serve for multiple kicking at this moment, only avaliable for server owner.
+### Updates (3/5/2022)
 1. Added Twitter function set, only avaliable for BOT owner.
 2. Added Events set, will execute auto-reply and auto-disconnect.
 3. Changed to home hosting, geo-block issue resolved, with keep_alive.py removed.
 4. Changed json file location.
 5. Switch back to youtube-dl as link retreve format of yt-dlp is differ from youtube-dl, causing error
-6. Added BOT execulsive role, name N.Ben, with permission of administrator.
 ### Updates (11/4/2022)
 1. Change all array in various list into class objects, Queue object and TimeList object.
 2. Use yt-dlp instead of youtube-dl.

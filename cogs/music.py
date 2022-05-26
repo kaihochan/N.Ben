@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 import yt_dlp
-import youtube_dl
 import datetime
+import re
 
 # class declear
 # serve for global list
@@ -20,6 +20,11 @@ class TimeList:
         self.t_video = None
         self.t_start = None
         self.t_end = None
+
+class Misc:
+    def __init__(self):
+        self.count = -1
+        self.loop = False
 
 # globol list
 # option for ydl, ffmpeg
@@ -61,16 +66,19 @@ class music(commands.Cog):
     def load_queue(self, ctx):
         global queue, misc, current_playing, timeList
         serverID = ctx.message.guild.id
-        if misc[serverID] != -1:
-            current_playing[serverID] = queue[serverID][0]
-            queue[serverID].pop(0)
-            misc[serverID] -= 1
-            timeList[serverID].t_video = datetime.timedelta(seconds=current_playing[serverID].duration)
-            timeList[serverID].t_start = datetime.datetime.now()
-            timeList[serverID].t_end = timeList[serverID].t_video + timeList[serverID].t_start
+        if not misc[serverID].loop:
+            if misc[serverID].count != -1:
+                current_playing[serverID] = queue[serverID][0]
+                queue[serverID].pop(0)
+                misc[serverID].count -= 1
+                timeList[serverID].t_video = datetime.timedelta(seconds=current_playing[serverID].duration)
+                timeList[serverID].t_start = datetime.datetime.now()
+                timeList[serverID].t_end = timeList[serverID].t_video + timeList[serverID].t_start
+                self.client.dispatch("queue_load", ctx)
+            elif misc[serverID].count == -1:
+                ctx.voice_client.stop()
+        else:
             self.client.dispatch("queue_load", ctx)
-        elif misc[serverID] == -1:
-            ctx.voice_client.stop()
     
     # command &&j, lazy version of &&skip
     @commands.command()
@@ -98,7 +106,7 @@ class music(commands.Cog):
         global queue, misc, current_playing, timeList
         serverID = ctx.message.guild.id
         if not(serverID in misc):
-            misc[serverID] = -1
+            misc[serverID] = Misc()
         if not(serverID in queue):
             queue[serverID] = []
         if not(serverID in current_playing):
@@ -131,29 +139,30 @@ class music(commands.Cog):
         embed = discord.Embed()
         if ctx.author.voice is None:
             embed.description = "❎ You are not in any voice channel, can't play any song"
-            await ctx.send(embed=embed)
-            return
+            return await ctx.send(embed=embed)
         if ctx.voice_client is None:
             await ctx.invoke(self.join)
         
         serverID = ctx.message.guild.id
         v_client = ctx.voice_client
 
-        with youtube_dl.YoutubeDL(YDL_OPT) as ytDL:
+        with yt_dlp.YoutubeDL(YDL_OPT) as ytDL:
             info = ytDL.extract_info(url, download=False)
             v_title = info.get('title', None)
             v_url = info.get('url', None)
             v_uploader = info.get('uploader', None)
             v_duration = info.get('duration', None)
-            url2 = info['formats'][0]['url']
-            
+            for formats in info['formats']:
+                if not re.search(r"(ytimg)|(manifest)", formats['url'], re.IGNORECASE):
+                    url2 = formats['url']
+                    break
+
         if v_client.is_playing():
-            misc[serverID] += 1
+            misc[serverID].count += 1
             queue[serverID].append(Queue(url2, v_title, v_url, v_uploader, ctx.author.mention, v_duration))
-            embed2 = discord.Embed(title=f'Added to queue, position {misc[serverID]+1}')
+            embed2 = discord.Embed(title=f'Added to queue, position {misc[serverID].count+1}')
             embed2.description = f'[{v_title} by {v_uploader}]({url})\r\nQueued by [{ctx.author.mention}]'
-            await ctx.send(embed=embed2)
-            return     
+            return await ctx.send(embed=embed2)
         
         source = await discord.FFmpegOpusAudio.from_probe(url2, **FFMPEG_OPT)
         current_playing[serverID] = Queue(url2, v_title, v_url, v_uploader, ctx.author.mention, v_duration)
@@ -193,10 +202,10 @@ class music(commands.Cog):
         ctx.voice_client.stop()
         embed.description = "⏭️ Skipped"
         await ctx.send(embed=embed)
-        if misc[serverID] != -1:
+        if misc[serverID].count != -1:
             current_playing[serverID] = queue[serverID][0]
             queue[serverID].pop(0)
-            misc[serverID] -= 1
+            misc[serverID].count -= 1
             timeList[serverID].t_video = datetime.timedelta(seconds=current_playing[serverID].duration)
             timeList[serverID].t_start = datetime.datetime.now()
             timeList[serverID].t_end = timeList[serverID].t_video + timeList[serverID].t_start
@@ -233,12 +242,12 @@ class music(commands.Cog):
         global queue, misc
         embed = discord.Embed()
         serverID = ctx.message.guild.id
-        if misc[serverID] == -1:
+        if misc[serverID].count == -1:
             embed.description = 'Queue is empty!'
             await ctx.send(embed=embed)
-        elif misc[serverID] != -1:
+        elif misc[serverID].count != -1:
             output = '```CSS\r\n[Songs in queue]\r\n'
-            for i in range(misc[serverID]+1):
+            for i in range(misc[serverID].count+1):
                 output += f'{i+1}: {queue[serverID][i].title}\r\n'
             output += '```'
             await ctx.send(output)
@@ -263,18 +272,17 @@ class music(commands.Cog):
             StatusBarString = ''.join(StatusBar)
             embed.title = f'Now Playing 🎵 {current_playing[serverID].title} by {current_playing[serverID].uploader}'
             embed.url = current_playing[serverID].yt_url
-            embed.description = f'Queued by [{current_playing[serverID].pusher}]\r\n{self.timedelta_str(ctx, timePast)} {StatusBarString} {self.timedelta_str(ctx, timeList[serverID].t_video)}'
+            embed.description = f'Queued by [{current_playing[serverID].pusher}]\r\n{self.timedelta_str(timePast)} {StatusBarString} {self.timedelta_str(timeList[serverID].t_video)}'
         else:
             embed.description = 'No song is playing now.'
         await ctx.send(embed=embed)
 
-    def timedelta_str(self, ctx, timedelta):
+    def timedelta_str(self, timedelta):
         second = timedelta.total_seconds()
         tthr = int(second // 3600)
         ttmin = int((second - (tthr * 3600)) // 60)
         tts = int((second - (tthr * 3600)) % 60)
         outstr = ''
-
         if tthr > 0:
             outstr = f'{tthr}:'
         if (tthr > 0) & (ttmin < 10):
@@ -285,7 +293,6 @@ class music(commands.Cog):
             outstr += f'0{tts}'
         else:
             outstr += f'{tts}'
-
         return outstr
 
     # command &&rr, lazy version of &&remove
@@ -299,15 +306,14 @@ class music(commands.Cog):
         global queue, misc
         serverID = ctx.message.guild.id
         embed = discord.Embed()
-        if misc[serverID] < 0:
+        if misc[serverID].count < 0:
             embed.description = 'No song in queue for you to remove.'
             await ctx.send(embed=embed)
             return
-
         if q_num != None:
             rr_q = int(q_num)
             
-            if (rr_q - 1) > misc[serverID]:
+            if (rr_q - 1) > misc[serverID].count:
                 embed.description = 'Dont have such many song.'
                 await ctx.send(embed=embed)
                 return
@@ -320,11 +326,11 @@ class music(commands.Cog):
                 embed.description = f'[{queue[serverID][rr_q-1].title} by {queue[serverID][rr_q-1].uploader}]({queue[serverID][rr_q-1].yt_url})'
                 await ctx.send(embed=embed)
                 queue[serverID].pop(rr_q-1)
-                misc[serverID] -= 1
+                misc[serverID].count -= 1
                 return
         else:
             output = '```CSS\r\n[Input the queue number you want to remove the song]\r\n'
-            for i in range(misc[serverID]+1):
+            for i in range(misc[serverID].count+1):
                 output += f'{i+1}: {queue[serverID][i].title}\r\n'
             output += 'c: Cancel action'
             output += '```'
@@ -337,7 +343,7 @@ class music(commands.Cog):
                 return
             else:
                 rr_q2 = int(q_num2)
-                if (rr_q2 - 1) > misc[serverID]:
+                if (rr_q2 - 1) > misc[serverID].count:
                     embed.description = 'Dont have such many song. Action cancelled.'
                     await ctx.send(embed=embed)
                     return
@@ -350,8 +356,22 @@ class music(commands.Cog):
                     embed.description = f'[{queue[serverID][rr_q2-1].title} by {queue[serverID][rr_q2-1].uploader}]({queue[serverID][rr_q2-1].yt_url})'
                     await ctx.send(embed=embed)
                     queue[serverID].pop(rr_q2-1)
-                    misc[serverID] -= 1
+                    misc[serverID].count -= 1
                     return
+    
+    # command &&loop, enable/disable looping
+    @commands.command()
+    async def loop(self, ctx):
+        serverID = ctx.message.guild.id
+        embed = discord.Embed()
+        if misc[serverID].loop:
+            misc[serverID].loop = False
+            embed.description = '🔂 Looping OFF'
+            await ctx.send(embed=embed)
+        else:
+            misc[serverID].loop = True
+            embed.description = '🔂 Looping ON'
+            await ctx.send(embed=embed)
 
 def setup(nbot):
     nbot.add_cog(music(nbot))

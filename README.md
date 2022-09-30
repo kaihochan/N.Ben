@@ -5,45 +5,48 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 
 ## Functions provided:
 **Prefix of BOT:** `&`
-### N.Ben related
-| Command | Usage | Objective |
-| :---- | :----| :----|
-| `smile` | `&smile` | N.Ben smile gif |
-| `nteam` | `&nteam` | Many N.Ben picture |
-| `backpack` | `&backpack` | N.Ben's backpack picture |
-| `dllm` | `&dllm` | Say 「屌你老母」 |
 ### Music related
-| Command | Usage | Objective |
-| :---- | :----| :----|
-| `join` | `&join` | Join/Change to current voice channel |
-| `j` | `&j` | Shorthand of `&join` |
-| `discon` | `&discon` | Leave voice channel |
-| `ds` | `&ds` | Shorthand of `&discon` |
-| `play` | `&play *url*` | Play YouTube video, if it is playing then load into queue <br> *Directly join/change to current voice channel if haven't* |
-| `p` | `&p *url*` | Shorthand of `&play *url*` |
-| `queue` | `&queue` | List out all the song in queue |
-| `q` | `&q` | Shorthand of `&queue` |
-| `np` | `&np` | Show info of current song |
-| `remove` | `&remove` <br> `&remove *number*` | Remove songs in queue <br> If you don't know the queue number of target video use the upper usage, will show the list and ask you to input the number |
-| `rr` | `&rr` <br> `&rr *number*` | Shorthand of `&remove` |
-| `skip` | `&skip` | Skip current song |
-| `fs` | `&fs` | Shorthand of `&skip` |
-| `pause` | `&pause` | Pause current song |
-| `resume` | `&resume` | Resume playing song |
-| `loop` | `&loop` | Enable/disable looping |
+| Command | Aliases | Parameter | Objective |
+| :---- | :----| :----| :----|
+| `clear` | `pg` | None | Clear songs in queue |
+| `disconnect` | `ds` | None | Leave voice channel |
+| `join` | `j` | None | Join/Change to current voice channel |
+| `loop` | None | None | Enable/disable looping |
+| `np` | None | None | Show info of current song |
+| `play` | `p` | url | Play YouTube video, if it is playing then load into queue <br> *Directly join/change to current voice channel if haven't* |
+| `queue` | `q` | None | List out all the song in queue |
+| `remove` | `r` | *number* | Remove songs in queue <br> leaving number blank will show the list and ask to input the number |
+| `skip` | `fs` | None | Skip current song |
 ### Twitter related
 Following commands only made available for owner of BOT.
-| Command | Usage | Objective |
+| Command | Parameter | Objective |
 | :---- | :----| :----|
-| `starttwitter` | `&starttwitter` | Start post liked post of followed user in specified channel in each day 18:30 (GMT+8) |
-| `checkstwitter` | `&checkstwitter *username*` | Checks given Twitter username's ID |
-| `addtwitter` | `&addtwitter *username*` | Add given username, current channel into watchlist and save into json |
+| `pause_update` | None | Pause/resume regular update on Twitter channel |
+| `username_to_id` | username | Checks given Twitter username's ID |
+
+Following commands only made available for server admins.
+| Command | Parameter | Objective |
+| :---- | :----| :----|
+| `subscribe` | username | Add given username, current channel into watchlist and save into json |
+
+Following tasks are run periodicly
+| Task | Period | Information |
+| :---- | :----| :----|
+| `post_liked_tweets` | 6 hours | Post subscribed users' liked tweets in 00:30, 06:30, 12:30, 18:30 (UTC+8) everyday |
 ### Admin related
 Following commands only made available for owner of BOT.
-| Command | Usage | Objective |
+| Command | Parameter | Objective |
 | :---- | :----| :----|
-| `kick` | `&kick *@user* *number*` | Add user with kick count into auto kick list |
-| `rkick` | `&rkick *@user*` | Remove user from auto kick list |
+| `load` | None | Load function set in Cogs folers |
+| `reload` | None | Reload function set in Cogs folers |
+| `shutdown` | None | Shutdown the BOT service |
+| `unload` | None | Unload function set in Cogs folers |
+
+Following commands only made available for server admins.
+| Command | Parameter | Objective |
+| :---- | :----| :----|
+| `kick` | *@user*, *number* | Add user with kick count into auto kick list |
+| `rkick` | *@user* | Remove user from auto kick list |
 ### Events related
 | Event | Action |
 | :----| :----|
@@ -55,14 +58,15 @@ Following commands only made available for owner of BOT.
 | If only BOT in voice channel | Leave channel in 60s if no one join that channel or disconnect BOT |
 | If user is in the kick list and join the voice channel | Kick that user out of voice channel |
 
-## Current updates (26/5/2022)
-1. Added N-word counter, only count the n-words after joining the channels.
-2. Change music library from youtube-dl to yt-dlp, which seems fixed issue that song lags when playing.
-3. Using RegEx to find the right URL for playing video in music COG, fixed issue that some song is unable to play due to wrong link issue.
-4. Using RegEx to detect keywords in events.
-5. Added `&loop` fuction for looping same song.
-6. Added Misc object for storing looping status and number of songs in queue.
-7. Added Admin function set, only serve for multiple kicking at this moment, only avaliable for server owner.
+## Current updates (1/10/2022)
+1. Migrated to discord.py v2.0.
+2. Remove `setting.json` and `twitter.json`, changed into `.env`.
+3. Remove entire NBen function set.
+4. Remove `pause` and `resume` function in Music.
+5. Categorise `load`, `unload`, `reload`, `shutdown` into Admin
+6. Open `subscribe` function in Twitter to server admins
+7. Remove redundant code in all cogs
+8. Change all code to meet PEP8 standard
 
 ## Current bugs
 Not found yet in this update.
@@ -72,6 +76,8 @@ Not found yet in this update.
 2. Play the song in queue after disconnecting from voice channel.
 
 ## Additional information
-1. Tweepy, Python library of Twitter API: https://www.tweepy.org/
-2. discord.py, Python library of Discord API: https://discordpy.readthedocs.io/en/stable/
+1. discord.py, Python library of Discord API: https://discordpy.readthedocs.io/en/stable/
+    - Guide of migrating to v2.0: https://discordpy.readthedocs.io/en/stable/migrating.html
+2. Tweepy, Python library of Twitter API: https://www.tweepy.org/
 3. yt-dlp, Python library for video downloading: https://github.com/yt-dlp/yt-dlp
+4. regex, Python library with Unicode categories supported and standard re library backward compatible: https://pypi.org/project/regex/

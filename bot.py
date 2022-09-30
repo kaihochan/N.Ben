@@ -1,70 +1,33 @@
 import discord
-from discord.ext import commands
-
+import asyncio
 import os
-
-# setting import
 import json
-with open('settings/setting.json', mode='r', encoding='utf8') as dcfile:
-    dcdata = json.load(dcfile)
-    dcfile.close()
+from discord.ext import commands
+from dotenv import load_dotenv
 
-# intents setup
-intents = discord.Intents.default()
-intents.members = True
+load_dotenv()
+intents = discord.Intents.all()
+activity = discord.Activity(type=discord.ActivityType.listening, name="Aimer - Monochrome Syndrome")
+client = commands.Bot(
+    command_prefix='*',
+    activity=discord.Game('J'),
+    intents=intents, 
+    fetch_offline_members=True,
+    case_insensitive = True,
+    owner_ids=set(json.loads(os.getenv('DISCORD_OWNER'))))
 
-# help command
-class help(commands.HelpCommand):
-    def __init__(self):
-        super().__init__()
-
-# nbot = N.Ben
-nbot = commands.Bot(
-        command_prefix='&',
-        intents=intents, 
-        fetch_offline_members=True,
-        case_insensitive = True,
-        owner_ids=set(dcdata["OWNER"]))
-
-# startup with status
-# startup notification on background console
-@nbot.event
+@client.event
 async def on_ready():
-    await nbot.change_presence(
-        status=discord.Status.online, 
-        activity=discord.Game('波台@LIHKG'),
-        afk=False)
-    print('Ready! N.Ben get his backpack ready!')
+    print(f'[{client.user}] Logged in and running normally')
 
-# load function set in cogs folders
-# command hided, only available for owners
-@nbot.command(hidden=True)
-@commands.is_owner()
-async def load(ctx, ext):
-    nbot.load_extension(f'cogs.{ext}')
-    embed = discord.Embed(description=f'✔️ {ext} loaded. Related functions available now.')
-    await ctx.send(embed=embed)
+async def load_cogs():
+    for loadfile in os.listdir('./cogs'):
+        if loadfile.endswith('.py'):
+            await client.load_extension(f'cogs.{loadfile[:-3]}')
 
-# unload function set in cogs folders
-# command hided, only available for owners
-@nbot.command(hidden=True)
-@commands.is_owner()
-async def unload(ctx, ext):
-    nbot.unload_extension(f'cogs.{ext}')
-    embed = discord.Embed(description=f'❌ {ext} unloaded. Related functions unavailable now.')
-    await ctx.send(embed=embed)
+async def main():
+    async with client:
+        await load_cogs()
+        await client.start(os.getenv('DISCORD_TOKEN'))
 
-# reload function set in cogs folers
-# command hided, only available for owners
-@nbot.command(hidden=True)
-@commands.is_owner()
-async def reload(ctx, ext):
-    nbot.reload_extension(f'cogs.{ext}')
-    embed = discord.Embed(description=f'♻️ {ext} reloaded.')
-    await ctx.send(embed=embed)
-
-for loadfile in os.listdir('./cogs'):
-    if loadfile.endswith('.py'):
-        nbot.load_extension(f'cogs.{loadfile[:-3]}')
-
-nbot.run(dcdata['TOKEN'])
+asyncio.run(main())

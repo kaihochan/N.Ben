@@ -1,6 +1,15 @@
 # N.Ben
 ## This is the update log of the discord BOT, N.Ben
-### Current updates (26/5/2022)
+### Current updates (1/10/2022)
+1. Migrated to discord.py v2.0.
+2. Remove `setting.json` and `twitter.json`, changed into `.env`.
+3. Remove entire NBen function set.
+4. Remove `pause` and `resume` function in Music.
+5. Categorise `load`, `unload`, `reload`, `shutdown` into Admin
+6. Open `subscribe` function in Twitter to server admins
+7. Remove redundant code in all cogs
+8. Change all code to meet PEP8 standard
+### Updates (26/5/2022)
 1. Added N-word counter, only count the n-words after joining the channels.
 2. Change music library from youtube-dl to yt-dlp, which seems fixed issue that song lags when playing.
 3. Using RegEx to find the right URL for playing video in music COG, fixed issue that some song is unable to play due to wrong link issue.

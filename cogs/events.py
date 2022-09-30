@@ -3,49 +3,43 @@ from discord.ext import commands
 from discord.utils import get
 import asyncio
 import datetime
-import re
+import regex as re
 import json
-import os
 
-class events(commands.Cog):
-    def __init__(self, nbot):
-        self.client = nbot
+class Events(commands.Cog):
+    def __init__(self, client: commands.Bot) -> None:
+        self.client = client
+        self.prog_dw = re.compile(r"([\p{Unified_Ideograph=True}]+|\b)(achun)?(dw)(_xd|_owo)?([{\p{Unified_Ideograph=True}]+|\b)|([\u738b\u9ec3])?(\u4fca\u9298|\u6625\u51a5)|\u30c0\u30cb\u30a8\u30eb", re.IGNORECASE|re.UNICODE)
+        self.prog_gay = re.compile(r"([\p{Unified_Ideograph=True}]+|\b)(gay)([\p{Unified_Ideograph=True}]+|\b)|\u57fa\u4f6c", re.IGNORECASE|re.UNICODE)
+        self.prog_not = re.compile(r"\b(not)\b|[\u5514\u543e][\u4fc2\u7cfb]", re.IGNORECASE|re.UNICODE)
+        self.prog_n_word = re.compile(r"\b(nigga)(s\b|\b)", re.IGNORECASE|re.UNICODE)
+        self.prog_n_word_hard_r = re.compile(r"\b(nigger)(s\b|\b)", re.IGNORECASE|re.UNICODE)
 
-    # event trigger by message contain dw or gay
-    # if message contain n-words, update json
     @commands.Cog.listener()
-    async def on_message(self, message:discord.Message):
+    async def on_message(self, message:discord.Message) -> None:
         if (message.author.bot):
             return
-        match_dw = re.search(r"\b(dw)\b", message.content, re.IGNORECASE)
-        match_gay = re.search(r"\b(gay)\b", message.content, re.IGNORECASE)
-        match_not = re.search(r"\b(not)\b", message.content, re.IGNORECASE)
-        if (match_dw is not None) & (match_gay is not None):
-            if match_not:
-                return await message.channel.send('No')
-            else:
-                return await message.channel.send('Yes')
-        elif match_dw:
-            return await message.channel.send('Gay')
-        elif match_gay:
-            return await message.channel.send('DW')
-        for i in re.finditer(r"\b(nigga)(s\b|\b)", message.content, re.IGNORECASE):
+        if ((self.prog_dw.search(message.content) is not None) & (self.prog_gay.search(message.content) is not None)):
+            return await message.channel.send("No" if self.prog_not.search(message.content) is not None else "Yes")
+        elif self.prog_dw.search(message.content):
+            return await message.channel.send("Gay")
+        elif self.prog_gay.search(message.content):
+            return await message.channel.send("DW")
+        for i in self.prog_n_word.finditer(message.content):
             if str(message.author.id) not in self.client.ndata:
-                self.client.ndata[str(message.author.id)] = {'total': 0, 'hard_r': 0, 'last':0}
-            self.client.ndata[str(message.author.id)]['total'] += 1
-        for i in re.finditer(r"\b(nigger)(s\b|\b)", message.content, re.IGNORECASE):
+                self.client.ndata[str(message.author.id)] = {"total": 0, "hard_r": 0, "last":0}
+            self.client.ndata[str(message.author.id)]["total"] += 1
+        for i in self.prog_n_word_hard_r.finditer(message.content):
             if str(message.author.id) not in self.client.ndata:
-                self.client.ndata[str(message.author.id)] = {'total': 0, 'hard_r': 0, 'last':0}
-            self.client.ndata[str(message.author.id)]['total'] += 1
-            self.client.ndata[str(message.author.id)]['hard_r'] += 1
+                self.client.ndata[str(message.author.id)] = {"total": 0, "hard_r": 0, "last":0}
+            self.client.ndata[str(message.author.id)]["total"] += 1
+            self.client.ndata[str(message.author.id)]["hard_r"] += 1
         with open('settings/nword.json', mode='w', encoding='utf8') as nfile:
             json.dump(self.client.ndata, nfile, ensure_ascii=False, indent=4)
             nfile.close()
 
-    # event trigger by people leaving
-    # if only bot in voice channel, bot will disconnect in 1 min time
     @commands.Cog.listener()
-    async def on_voice_state_update(self, member:discord.Member, before:discord.VoiceState, after:discord.VoiceState):
+    async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState) -> None:
         vcch = get(self.client.voice_clients, guild=member.guild)
         if (str(member.id) in self.client.kdata) & (after.channel is not None):
             if self.client.kdata[str(member.id)] > 0:
@@ -82,9 +76,8 @@ class events(commands.Cog):
                 print(f'[auto-countdown] {vcch.channel.name} in {vcch.guild.name} @ {datetime.datetime.now()}')
                 await asyncio.sleep(60)
                 await self.auto_disconnect(member, before)
-
-    # late function call by on_voice_state_update to disconnect the bot     
-    async def auto_disconnect(self, member:discord.Member, before:discord.VoiceState):
+  
+    async def auto_disconnect(self, member:discord.Member, before:discord.VoiceState) -> None:
         vcch = get(self.client.voice_clients, guild=member.guild)
         if (before is None) | (vcch is None):
             return
@@ -109,5 +102,5 @@ class events(commands.Cog):
         else:
             return
 
-def setup(nbot):
-    nbot.add_cog(events(nbot))
+async def setup(client: commands.Bot) -> None:
+    await client.add_cog(Events(client))

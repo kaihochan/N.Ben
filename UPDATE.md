@@ -1,6 +1,6 @@
 # N.Ben
 ## This is the update log of the discord BOT, N.Ben
-### Current updates (1/10/2022)
+### Updates (1/10/2022)
 1. Migrated to discord.py v2.0.
 2. Remove `setting.json` and `twitter.json`, changed into `.env`.
 3. Remove entire NBen function set.

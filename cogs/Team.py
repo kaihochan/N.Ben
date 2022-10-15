@@ -18,7 +18,6 @@ class Team(commands.Cog):
                 team_message += f"{user.mention}\n"
             await ctx.send(team_message)
 
-
     @commands.command()
     async def userlink(self, ctx: commands.Context, user1: discord.Member, user2: discord.Member) -> None:
         pass

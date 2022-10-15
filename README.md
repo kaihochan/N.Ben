@@ -12,7 +12,7 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 | `disconnect` | `ds` | None | Leave voice channel |
 | `join` | `j` | None | Join/Change to current voice channel |
 | `loop` | None | None | Enable/disable looping |
-| `np` | None | None | Show info of current song |
+| `nowplaying` | `np` | None | Show info of current song |
 | `play` | `p` | url | Play YouTube video, if it is playing then load into queue <br> *Directly join/change to current voice channel if haven't* |
 | `queue` | `q` | None | List out all the song in queue |
 | `remove` | `r` | *number* | Remove songs in queue <br> leaving number blank will show the list and ask to input the number |
@@ -32,7 +32,7 @@ Following commands only made available for server admins.
 Following tasks are run periodicly
 | Task | Period | Information |
 | :---- | :----| :----|
-| `post_liked_tweets` | 6 hours | Post subscribed users' liked tweets in 00:30, 06:30, 12:30, 18:30 (UTC+8) everyday |
+| `post_liked_tweets` | 8 hours | Post subscribed users' liked tweets in 02:30, 10:30, 18:30 (UTC+8) everyday |
 ### Admin related
 Following commands only made available for owner of BOT.
 | Command | Parameter | Objective |
@@ -58,22 +58,10 @@ Following commands only made available for server admins.
 | If only BOT in voice channel | Leave channel in 60s if no one join that channel or disconnect BOT |
 | If user is in the kick list and join the voice channel | Kick that user out of voice channel |
 
-## Current updates (1/10/2022)
-1. Migrated to discord.py v2.0.
-2. Remove `setting.json` and `twitter.json`, changed into `.env`.
-3. Remove entire NBen function set.
-4. Remove `pause` and `resume` function in Music.
-5. Categorise `load`, `unload`, `reload`, `shutdown` into Admin
-6. Open `subscribe` function in Twitter to server admins
-7. Remove redundant code in all cogs
-8. Change all code to meet PEP8 standard
-
-## Current bugs
-Not found yet in this update.
-
-## Planning
-1. Add search video function to `play` command.
-2. Play the song in queue after disconnecting from voice channel.
+## Current updates (15/10/2022)
+1. Added Team function set
+2. Change the regex into pre-compiled to increase match speed
+3. Fix minor issues
 
 ## Additional information
 1. discord.py, Python library of Discord API: https://discordpy.readthedocs.io/en/stable/

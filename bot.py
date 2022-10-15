@@ -9,7 +9,7 @@ load_dotenv()
 intents = discord.Intents.all()
 activity = discord.Activity(type=discord.ActivityType.listening, name="Aimer - Monochrome Syndrome")
 client = commands.Bot(
-    command_prefix='*',
+    command_prefix='&',
     activity=discord.Game('J'),
     intents=intents, 
     fetch_offline_members=True,

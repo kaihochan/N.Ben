@@ -11,6 +11,7 @@ class Nword(commands.Cog):
     
     @commands.command()
     async def count(self, ctx: commands.Context, user: discord.User = None) -> None:
+        """Count how many N words that user have said."""
         embed = discord.Embed()
         if user is None:
             user = ctx.author

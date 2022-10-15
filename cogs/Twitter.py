@@ -119,5 +119,5 @@ class Twitter(commands.Cog):
         self.pause = not self.pause
         print(f"[Twitter] Daily update { 'resumed' if self.pause else 'paused' }.")
 
-async def setup(client: commands.Bot):
+async def setup(client: commands.Bot) -> None:
     await client.add_cog(Twitter(client))

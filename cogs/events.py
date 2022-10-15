@@ -71,8 +71,7 @@ class Events(commands.Cog):
         if vcch.channel != before.channel:
             return
         if after.channel == None:
-            memNum = len(vcch.channel.members)
-            if memNum == 1:
+            if len(vcch.channel.members) == 1:
                 print(f'[auto-countdown] {vcch.channel.name} in {vcch.guild.name} @ {datetime.datetime.now()}')
                 await asyncio.sleep(60)
                 await self.auto_disconnect(member, before)

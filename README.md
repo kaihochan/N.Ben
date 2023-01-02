@@ -63,7 +63,7 @@ Following commands only made available for server admins.
 | :---- | :----| :----|
 | `team` | *@ignore_user* | Random users into the 2 teams, can specify ignored users. |
 
-## Current updates (15/10/2022)
+## Current updates (2/1/2023)
 1. Refactor the `Music` function set, with new `Song`, `Server` class.
 2. Restore the `NBen` function set by request.
 

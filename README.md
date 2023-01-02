@@ -8,15 +8,16 @@ This is a Discord BOT, which inspired by a famous LIHKG user named "N賓"
 ### Music related
 | Command | Aliases | Parameter | Objective |
 | :---- | :----| :----| :----|
-| `clear` | `pg` | None | Clear songs in queue |
+| `clear` | `c`, `pg` | None | Clear songs in queue |
 | `disconnect` | `ds` | None | Leave voice channel |
 | `join` | `j` | None | Join/Change to current voice channel |
-| `loop` | None | None | Enable/disable looping |
+| `loop` | `l` | None | Enable/disable looping |
+| `looplist` | `ll` | None | Enable/disable looping song list |
 | `nowplaying` | `np` | None | Show info of current song |
 | `play` | `p` | url | Play YouTube video, if it is playing then load into queue <br> *Directly join/change to current voice channel if haven't* |
 | `queue` | `q` | None | List out all the song in queue |
 | `remove` | `r` | *number* | Remove songs in queue <br> leaving number blank will show the list and ask to input the number |
-| `skip` | `fs` | None | Skip current song |
+| `skip` | `fs`, `s` | None | Skip current song |
 ### Twitter related
 Following commands only made available for owner of BOT.
 | Command | Parameter | Objective |
@@ -57,11 +58,14 @@ Following commands only made available for server admins.
 | Text channel contain n-word | Add count to n-word counter |
 | If only BOT in voice channel | Leave channel in 60s if no one join that channel or disconnect BOT |
 | If user is in the kick list and join the voice channel | Kick that user out of voice channel |
+### Team related
+| Command | Parameter | Objective |
+| :---- | :----| :----|
+| `team` | *@ignore_user* | Random users into the 2 teams, can specify ignored users. |
 
 ## Current updates (15/10/2022)
-1. Added Team function set
-2. Change the regex into pre-compiled to increase match speed
-3. Fix minor issues
+1. Refactor the `Music` function set, with new `Song`, `Server` class.
+2. Restore the `NBen` function set by request.
 
 ## Additional information
 1. discord.py, Python library of Discord API: https://discordpy.readthedocs.io/en/stable/

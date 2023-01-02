@@ -1,5 +1,9 @@
 # N.Ben
 ## This is the update log of the discord BOT, N.Ben
+### Updates (15/10/2022)
+1. Added Team function set
+2. Change the regex into pre-compiled to increase match speed
+3. Fix minor issues
 ### Updates (1/10/2022)
 1. Migrated to discord.py v2.0.
 2. Remove `setting.json` and `twitter.json`, changed into `.env`.

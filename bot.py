@@ -7,7 +7,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 intents = discord.Intents.all()
-activity = discord.Activity(type=discord.ActivityType.listening, name="Aimer - Monochrome Syndrome")
 client = commands.Bot(
     command_prefix='&',
     activity=discord.Game('J'),

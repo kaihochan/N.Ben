@@ -5,6 +5,7 @@ import asyncio
 import datetime
 import regex as re
 import json
+import os
 
 class Events(commands.Cog):
     def __init__(self, client: commands.Bot) -> None:
@@ -16,15 +17,15 @@ class Events(commands.Cog):
         self.prog_n_word_hard_r = re.compile(r"\b(nigger)(s\b|\b)", re.IGNORECASE|re.UNICODE)
 
     @commands.Cog.listener()
-    async def on_message(self, message:discord.Message) -> None:
-        if (message.author.bot):
+    async def on_message(self, message: discord.Message) -> None:
+        if (message.author.bot) | ("&echo" in message.content):
             return
         if ((self.prog_dw.search(message.content) is not None) & (self.prog_gay.search(message.content) is not None)):
-            return await message.channel.send("No" if self.prog_not.search(message.content) is not None else "Yes")
+            await message.channel.send("No" if self.prog_not.search(message.content) is not None else "Yes")
         elif self.prog_dw.search(message.content):
-            return await message.channel.send("Gay")
+            await message.channel.send("Gay")
         elif self.prog_gay.search(message.content):
-            return await message.channel.send("DW")
+            await message.channel.send("DW")
         for i in self.prog_n_word.finditer(message.content):
             if str(message.author.id) not in self.client.ndata:
                 self.client.ndata[str(message.author.id)] = {"total": 0, "hard_r": 0, "last":0}
@@ -78,9 +79,7 @@ class Events(commands.Cog):
   
     async def auto_disconnect(self, member:discord.Member, before:discord.VoiceState) -> None:
         vcch = get(self.client.voice_clients, guild=member.guild)
-        if (before is None) | (vcch is None):
-            return
-        if vcch.channel != before.channel:
+        if (vcch.channel != before.channel) | (vcch is None):
             return
         memNum = len(vcch.channel.members)
         if memNum != 1:
@@ -98,8 +97,17 @@ class Events(commands.Cog):
             return await member.guild.text_channels[chList.index('一般')].send(embed=embed)
         elif 'general' in chList:
             return await member.guild.text_channels[chList.index('general')].send(embed=embed)
-        else:
+
+    """
+    @commands.Cog.listener()
+    async def on_presence_update(self, before: discord.Member, after: discord.Member) -> None:
+        if after.id not in json.loads(os.getenv('DISCORD_OWNER')):
             return
+        for activity in after.activities:
+            if type(activity) is discord.activity.Spotify:
+                return await self.client.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=f"{activity.artist} - {activity.title}"))
+        await self.client.change_presence(activity=discord.Game('J'))
+    """
 
 async def setup(client: commands.Bot) -> None:
     await client.add_cog(Events(client))

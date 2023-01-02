@@ -8,9 +8,12 @@ class Admin(commands.Cog):
         self.client = client
         with open("settings/kick.json", mode="r", encoding="utf8") as kfile:
             self.client.kdata = json.load(kfile)
-            kfile.close()
+        with open("settings/role.json", mode="r", encoding="utf8") as role_file:
+            self.client.role_data = json.load(role_file)
+        with open("settings/nickname.json", mode="r", encoding="utf8") as nickname_file:
+            self.client.nickname_data = json.load(nickname_file)
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.is_owner()
     async def shutdown(self, ctx: commands.Context) -> None:
         """
@@ -74,7 +77,6 @@ class Admin(commands.Cog):
         await ctx.send(embed=embed)
         with open("settings/kick.json", mode="w", encoding="utf8") as kfile:
             json.dump(self.client.kdata, kfile, ensure_ascii=False, indent=4)
-            kfile.close()
         for guild in self.client.guilds:
             for voice_ch in guild.voice_channels:
                 if user in voice_ch.members:
@@ -83,7 +85,6 @@ class Admin(commands.Cog):
                     self.client.kdata[str(user.id)] -= 1
                     with open("settings/kick.json", mode="w", encoding="utf8") as kfile:
                         json.dump(self.client.kdata, kfile, ensure_ascii=False, indent=4)
-                        kfile.close()
                     return
     
     @commands.command()
@@ -92,14 +93,71 @@ class Admin(commands.Cog):
         if user is None:
             user = ctx.auther
         if str(user.id) in self.client.kdata:
-            self.client.kdata.pop(str(user.id))
+            del self.client.kdata[str(user.id)]
         embed = discord.Embed(
             title="Auto-kick counter",
-            description=f"Removed auto-kick count of {user.mention}",
-            thumbnail=user.avatar,)
+            description=f"Removed auto-kick count of {user.mention}")
+        embed.set_thumbnail(url=user.avatar)
         with open("settings/kick.json", mode="w", encoding="utf8") as kfile:
             json.dump(self.client.kdata, kfile, ensure_ascii=False, indent=4)
-            kfile.close()
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_guild_permissions(administrator=True)
+    async def force_role(self, ctx: commands.Context, user: discord.Member, role: discord.Role) -> None:
+        await user.add_roles(role)
+        if str(user.id) not in self.client.role_data:
+            self.client.role_data[str(user.id)] = [(ctx.guild.id, role.id)]
+        else:
+            self.client.role_data[str(user.id)].append((ctx.guild.id, role.id))
+        with open("settings/role.json", mode="w", encoding="utf8") as role_file:
+            json.dump(self.client.role_data, role_file, ensure_ascii=False, indent=4)
+        embed = discord.Embed(
+            title="Force role",
+            description=f"{role.mention} is assigned to {user.mention}",)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_guild_permissions(administrator=True)
+    async def unforce_role(self, ctx: commands.Context, user: discord.Member, role: discord.Role) -> None:
+        await user.remove_roles(role)
+        if str(user.id) in self.client.role_data:
+            if (ctx.guild.id, role.id) in self.client.role_data[str(user.id)]:
+                self.client.role_data[str(user.id)].remove((ctx.guild.id, role.id))
+                with open("settings/role.json", mode="w", encoding="utf8") as role_file:
+                    json.dump(self.client.role_data, role_file, ensure_ascii=False, indent=4)
+        embed = discord.Embed(
+            title="Force role",
+            description=f"{role.mention} is removed from {user.mention}",)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_guild_permissions(administrator=True)
+    async def force_nickname(self, ctx: commands.Context, user: discord.Member, name: str) -> None:
+        await user.edit(nick=name)
+        if str(user.id) not in self.client.nickname_data:
+            self.client.nickname_data[str(user.id)] = { str(ctx.guild.id): name }
+        else:
+            self.client.nickname_data[str(user.id)][str(ctx.guild.id)] = name
+        with open("settings/nickname.json", mode="w", encoding="utf8") as nickname_file:
+            json.dump(self.client.nickname_data, nickname_file, ensure_ascii=False, indent=4)
+        embed = discord.Embed(
+            title="Force nickname",
+            description=f"Nickname of '{name}' is assigned to {user.mention}",)
+        await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_guild_permissions(administrator=True)
+    async def unforce_nickname(self, ctx: commands.Context, user: discord.Member) -> None:
+        await user.edit(nick=None)
+        if str(user.id) in self.client.nickname_data:
+            if str(ctx.guild.id) in self.client.nickname_data[str(user.id)]:
+                del self.client.nickname_data[str(user.id)][str(ctx.guild.id)]
+                with open("settings/nickname.json", mode="w", encoding="utf8") as nickname_file:
+                    json.dump(self.client.nickname_data, nickname_file, ensure_ascii=False, indent=4)
+        embed = discord.Embed(
+            title="Force nickname",
+            description=f"Nickname is removed from {user.mention}",)
         await ctx.send(embed=embed)
 
 async def setup(client: commands.Bot) -> None:
